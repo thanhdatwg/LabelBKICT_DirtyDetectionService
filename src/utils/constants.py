@@ -19,3 +19,9 @@ POSTGRESQL_CONNECT = {
     'host': os.getenv('DB_HOST'),
     'port': os.getenv('DB_PORT'),
 }
+
+STATUS = {
+    'undetected': 0,
+    'dirty': 1,
+    'clean': 2
+}

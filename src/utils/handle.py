@@ -1,8 +1,8 @@
-import cv2
+import cv2, json, os
 from PIL import Image
 import numpy
 import torch
-
+from src.utils.constants import FULL_PATH_IMAGE_FOLDER
 
 def preprocess(path):
     image = Image.open(path)
@@ -15,7 +15,7 @@ def preprocess(path):
     return x.float()
 
 
-def postprocess(mask):
+def post_process(mask):
     mask = mask.squeeze().cpu().round()
     mask = torch.transpose(mask, 1, 0)
 
@@ -25,7 +25,7 @@ def postprocess(mask):
 def infer(model, path):
     x = preprocess(path)
     pr_mask = model.predict(x)
-    mask = postprocess(pr_mask)
+    mask = post_process(pr_mask)
 
     return mask
 
@@ -36,3 +36,15 @@ def ratio_element_matrix(x):
     ratio = sum_value / (h*w)
 
     return ratio.item()
+
+def get_path_image_file(message_value):
+    message_value = json.loads(message_value.decode("utf-8"))
+    if not message_value.get('image'):
+        raise KeyError('Kafka message_value not key image')
+    if not message_value['image'].get('originalImageFilename'):
+        raise KeyError(
+            'Kafka message_value image has null originalImageFilename')
+
+    org_file_name = message_value['image']['originalImageFilename']
+    full_path = os.path.join(FULL_PATH_IMAGE_FOLDER, org_file_name)
+    return full_path
