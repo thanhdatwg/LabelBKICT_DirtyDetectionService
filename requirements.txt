@@ -1,0 +1,7 @@
+os
+cv2
+json
+numpy
+torch
+psycopg2
+git+https://github.com/qubvel/segmentation_models.pytorch
