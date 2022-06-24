@@ -38,10 +38,9 @@ def ratio_element_matrix(x):
     return ratio.item()
 
 def get_path_image_file(message_value):
-    message_value = json.loads(message_value.decode("utf-8"))
-    if not message_value.get('image'):
+    if not message_value['image']:
         raise KeyError('Kafka message_value not key image')
-    if not message_value['image'].get('originalImageFilename'):
+    if not message_value['image']['originalImageFilename']:
         raise KeyError(
             'Kafka message_value image has null originalImageFilename')
 

@@ -1,6 +1,6 @@
 import torch, json, os
 from src.utils.handle import get_path_image_file, infer, ratio_element_matrix
-from src.utils.constants import SEGMENT_POLYP_MODEL_PATH, POSTGRESQL_CONNECT, STATUS
+from src.utils.constants import SEGMENT_POLYP_MODEL_PATH, POSTGRESQL_CONNECT, DIRTY, CLEAN
 from src.model.database import Database
 
 postgresql_worker = Database(POSTGRESQL_CONNECT)
@@ -21,18 +21,16 @@ class SegmentPolyp:
         ratio_mask = ratio_element_matrix(mask)
         return ratio_mask
     
-def get_ratio_result(message_value):
+def get_ratio_result(message_value_formatted):
     segment_polyp = SegmentPolyp(SEGMENT_POLYP_MODEL_PATH)
-    full_path_image = get_path_image_file(message_value)
+    full_path_image = get_path_image_file(message_value_formatted)
     try:
         ratio_result = segment_polyp.ratio_mask_file(full_path_image)
         print(ratio_result)
-        message_value_formatted = json.loads(message_value.decode("utf-8"))
-
         if ratio_result >= 0.8:
-            result_status = STATUS.dirty
+            result_status = DIRTY
         else:
-            result_status = STATUS.clean
+            result_status = CLEAN
 
         sql_query_update_ratio_result = f"UPDATE image_service_image_tab SET is_dirty = { result_status } where image_id =  {message_value_formatted['image']['id']} " 
         postgresql_worker.execute_query(sql_query_update_ratio_result)

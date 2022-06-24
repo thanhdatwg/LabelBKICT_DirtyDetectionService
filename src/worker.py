@@ -6,9 +6,11 @@ kafka_consumer = Consumer(KAFKA_TOPIC, KAFKA_CONSUMER_CONNECT)
 
 for message in kafka_consumer.consumer:
     message_value = message.value
-    print(message_value)
+    message_value_formatted = json.loads(message_value.decode("utf-8"))
+    print(message_value_formatted)
     try:
-        get_ratio_result(message_value)
+        if message_value_formatted['image']['imageType']: 
+            get_ratio_result(message_value_formatted)
     except KeyError as e:
-        print(e)
+        raise e
         continue
