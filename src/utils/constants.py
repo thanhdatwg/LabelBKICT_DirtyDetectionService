@@ -20,6 +20,8 @@ POSTGRESQL_CONNECT = {
     'port': os.getenv('DB_PORT'),
 }
 
+DIRTY_IMAGE_INDEX = 0.05
+
 UNDETECTED = 0
 DIRTY = 1
 CLEAN = 2
